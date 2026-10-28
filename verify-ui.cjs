@@ -74,6 +74,26 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
       await until("document.querySelector('[data-guidance-toolbar]').dataset.state==='playing' && document.querySelector('[data-registration-audio]').currentTime>0", 'Close did not start audio.');
       await trustedClick('[data-guidance-toggle]');
       assert.equal(await evaluate("document.querySelector('[data-registration-audio]').paused"), true);
+      for (const width of [390,320,1440]) {
+        await viewport(width,844,width<650);
+        const layout=await evaluate(`(() => {
+          const header=document.querySelector('.registration-header').getBoundingClientRect();
+          const guidance=document.querySelector('[data-guidance-toolbar]').getBoundingClientRect();
+          const frame=document.getElementById('dmfirst-frame').getBoundingClientRect();
+          const activity=document.querySelector('[data-activity-ticker]').getBoundingClientRect();
+          return {headerBottom:header.bottom,guidanceTop:guidance.top,guidanceBottom:guidance.bottom,guidanceLeft:guidance.left,guidanceRight:guidance.right,frameTop:frame.top,frameBottom:frame.bottom,activityTop:activity.top,width:innerWidth,height:innerHeight,scrollWidth:document.documentElement.scrollWidth};
+        })()`);
+        assert.ok(Math.abs(layout.headerBottom-layout.guidanceTop)<1,'Guidance must sit directly below the header.');
+        assert.ok(Math.abs(layout.frameTop-layout.guidanceBottom)<1,'The iframe must start below guidance.');
+        assert.ok(Math.abs(layout.frameBottom-layout.height)<1,'The iframe must fill the remaining viewport.');
+        assert.equal(layout.guidanceLeft,0);assert.equal(layout.guidanceRight,width);assert.equal(layout.scrollWidth,width);
+        if(width<650)assert.ok(layout.activityTop>=layout.guidanceBottom,'Activity must not cover voice controls.');
+        if(width!==320)await screenshot(`registration-guidance-${width<650?'mobile':'desktop'}.png`);
+      }
+      await evaluate("document.querySelector('[data-guidance-toolbar]').hidden=true");
+      assert.ok(await evaluate("Math.abs(document.getElementById('dmfirst-frame').getBoundingClientRect().top-document.querySelector('.registration-header').getBoundingClientRect().bottom)<1"),'Hidden guidance must leave no empty row.');
+      await evaluate("document.querySelector('[data-guidance-toolbar]').hidden=false");
+      await viewport(390,844,true);
       await trustedClick('[data-guidance-toggle]');
       await until("document.querySelector('[data-guidance-toolbar]').dataset.state==='playing'");
       await open('/registration.html', "document.getElementById('deposit-dialog')?.open && !document.querySelector('[data-guidance-toolbar]').hidden");
