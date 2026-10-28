@@ -16,9 +16,12 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
   browser.stderr.on('data', chunk => diagnostics += chunk);
   try {
     const portFile = path.join(profile, 'DevToolsActivePort');
-    for (let i = 0; i < 100 && !fs.existsSync(portFile); i++) await delay(100);
-    if (!fs.existsSync(portFile)) throw new Error('Browser failed to start: ' + diagnostics.slice(-1200));
-    const port = fs.readFileSync(portFile, 'utf8').split('\n')[0];
+    let port='';
+    for(let i=0;i<100;i++){
+      try{const candidate=fs.readFileSync(portFile,'utf8').split('\n')[0].trim();if(/^\d+$/.test(candidate)){port=candidate;break;}}catch{}
+      await delay(100);
+    }
+    if(!port)throw new Error('Browser failed to start: '+diagnostics.slice(-1200));
     const targets = await fetch(`http://127.0.0.1:${port}/json/list`).then(response => response.json());
     socket = new WebSocket(targets.find(target => target.type === 'page').webSocketDebuggerUrl.replace('localhost', '127.0.0.1'));
     await new Promise((resolve, reject) => {socket.onopen = resolve; socket.onerror = reject;});
@@ -206,13 +209,37 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     await screenshot('landing-desktop.png');
     await viewport(1233,826);
     assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'));
+    assert.ok(await evaluate("document.querySelector('.access-terminal').getBoundingClientRect().right < document.querySelector('.hero').getBoundingClientRect().left"),'The console must occupy the left column.');
+    assert.ok(await evaluate("document.querySelector('.terminal-operator').getBoundingClientRect().width>400"),'The figure should be prominent on desktop.');
+    assert.ok(await evaluate("document.querySelector('.scene-board').getBoundingClientRect().right < document.querySelector('.terminal-operator').getBoundingClientRect().left + document.querySelector('.terminal-operator').getBoundingClientRect().width * .35"),'The field must sit beside the figure.');
     await screenshot('landing-reference-desktop.png');
-    for (const width of [390, 320]) {
-      await viewport(width, 844, true);
-      assert.equal(await evaluate('document.documentElement.scrollWidth'), width, `Landing overflow at ${width}`);
-      assert.ok(await evaluate("document.querySelector('.progress-track').getBoundingClientRect().bottom < innerHeight"));
-      if (width === 390) await screenshot('landing-mobile.png');
+    await viewport(768,1024,true);
+    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'));
+    assert.ok(await evaluate("document.querySelector('.access-terminal').getBoundingClientRect().right < document.querySelector('.hero').getBoundingClientRect().left"));
+    for (const [width,height] of [[390,844],[360,640],[320,568],[320,480],[430,932],[393,720],[375,667],[844,390],[932,430],[568,320],[640,360]]) {
+      await viewport(width,height,true);
+      const layout=await evaluate(`(() => {
+        const terminal=document.querySelector('.access-terminal'),content=document.querySelector('.terminal-content');
+        const button=document.getElementById('continueLink').getBoundingClientRect();
+        const footer=document.querySelector('.portal-footer').getBoundingClientRect();
+        const progress=document.querySelector('.progress-track').getBoundingClientRect();
+        return {scrollWidth:document.documentElement.scrollWidth,scrollHeight:document.documentElement.scrollHeight,width:innerWidth,height:innerHeight,terminalScroll:terminal.scrollHeight,terminalHeight:terminal.clientHeight,contentScroll:content.scrollHeight,contentHeight:content.clientHeight,buttonTop:button.top,buttonBottom:button.bottom,buttonHeight:button.height,footerBottom:footer.bottom,progressBottom:progress.bottom};
+      })()`);
+      assert.ok(layout.scrollWidth<=layout.width,`Horizontal landing overflow at ${width}×${height}: ${JSON.stringify(layout)}`);
+      assert.ok(layout.scrollHeight<=layout.height+1,`Landing must fit without scrolling at ${width}×${height}: ${JSON.stringify(layout)}`);
+      assert.ok(layout.terminalScroll<=layout.terminalHeight+1 && layout.contentScroll<=layout.contentHeight+1,`Console must not clip its contents at ${width}×${height}: ${JSON.stringify(layout)}`);
+      assert.ok(layout.buttonTop>=0 && layout.buttonBottom<=layout.height && layout.footerBottom<=layout.height && layout.progressBottom<layout.height,`Primary controls and footer must stay on screen at ${width}×${height}`);
+      assert.ok(layout.buttonHeight>=44);
+      assert.ok(await evaluate("document.querySelector('[data-creator-link]').getBoundingClientRect().height>=44"));
+      if(width===390)await screenshot('landing-mobile.png');
+      if(width===320&&height===568)await screenshot('landing-compact-mobile.png');
+      if(width===844)await screenshot('landing-landscape-mobile.png');
     }
+    await viewport(390,844,true);
+    await evaluate("document.body.style.paddingTop='44px';document.body.style.paddingBottom='34px'");
+    assert.ok(await evaluate("document.documentElement.scrollHeight<=innerHeight+1 && document.getElementById('continueLink').getBoundingClientRect().bottom<=innerHeight && document.querySelector('.terminal-content').scrollHeight<=document.querySelector('.terminal-content').clientHeight+1"),'Safe-area spacing must not force scrolling or clip the console.');
+    await screenshot('landing-safe-area-mobile.png');
+    await evaluate("document.body.style.paddingTop='';document.body.style.paddingBottom=''");
     await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
     await open('/?preview=1', "document.documentElement.dataset.stage === 'unlocked'");
     assert.equal(await evaluate("getComputedStyle(document.querySelector('.field-reticle i')).animationName"),'none');
@@ -220,6 +247,14 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     assert.equal(await evaluate("[...document.querySelectorAll('[data-console-copy]')].every(el=>el.textContent===el.dataset.line)"),true);
     await send('Emulation.setEmulatedMedia',{features:[]});
     console.log('PASS landing progress, preview mode, desktop and mobile layouts');
+    if(process.argv.includes('--landing-only')){
+      await viewport(360,640,true);
+      await open('/',"!!document.getElementById('sceneBoard')");
+      await until("location.pathname==='/registration.html' && !!document.getElementById('predictionDialog')",'Phone landing handoff failed.');
+      assert.deepEqual(errors,[]);
+      console.log('PASS eleven phone layouts without scrolling, safe-area fit, reduced motion, and phone registration handoff.');
+      await send('Browser.close');socket=null;return;
+    }
 
     await viewport(1040, 800);
     await open('/creator-studio.html', "!!document.getElementById('studioGateForm')");
