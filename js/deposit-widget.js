@@ -20,7 +20,7 @@ export function mountDepositWidget(dialog, widget, prompt) {
     }
 
     function minimize() {
-        if (destroyed) return;
+        if (destroyed || dialog.open) return;
         widget.hidden = false;
         const reduced = page.defaultView?.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? true;
         if (!bounds || reduced || typeof widget.animate !== "function") return;
@@ -32,7 +32,7 @@ export function mountDepositWidget(dialog, widget, prompt) {
         panel.setAttribute("aria-hidden", "true");
         page.body.append(panel);
         ghost = panel;
-        animation = panel.animate([
+        const transition = panel.animate([
             {
                 left: `${bounds.left}px`,
                 top: `${bounds.top}px`,
@@ -49,9 +49,13 @@ export function mountDepositWidget(dialog, widget, prompt) {
                 borderRadius: "50%",
                 opacity: 0
             },
-        ], {duration: 420, easing: "cubic-bezier(.2,.75,.25,1)", fill: "both"});
-        animation.finished.then(() => panel.remove()).catch(() => {
-        });
+        ], {duration: 420, easing: "cubic-bezier(.2,.75,.25,1)", fill: "none"});
+        animation = transition;
+        transition.finished.then(() => {
+            transition.cancel();
+            panel.remove();
+            if (ghost === panel) {ghost = undefined; animation = undefined;}
+        }).catch(() => panel.remove());
     }
 
     widget.addEventListener("click", show);

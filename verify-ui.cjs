@@ -7,8 +7,9 @@ const {spawn} = require('node:child_process');
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 (async () => {
-  const executable = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(fs.existsSync);
-  if (!executable) throw new Error('Chrome or Edge is required for UI verification.');
+  const browsers = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'];
+  const executable = process.argv.includes('--edge') ? browsers[1] : browsers.find(fs.existsSync);
+  if (!executable || !fs.existsSync(executable)) throw new Error('The requested Chrome or Edge browser is not installed.');
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'mines-ui-'));
   const browser = spawn(executable, ['--headless=new', '--mute-audio', '--disable-gpu', '--in-process-gpu', '--remote-debugging-port=0', `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check', '--disable-background-networking', 'about:blank'], {windowsHide:true, stdio:['ignore', 'ignore', 'pipe']});
   let diagnostics = '', socket, site;
@@ -50,6 +51,93 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     const {startServer} = await import('./tools/serve.mjs'); site = await startServer(0);
     const url = `http://127.0.0.1:${site.address().port}`;
     const open = async (route, ready) => {await send('Page.navigate', {url:url + route}); await until(ready, `Page did not mount: ${route}`);};
+    if (process.argv.includes('--widgets-only')) {
+      await send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:5});
+      const tap = async (selector,{dx=0,dy=0,edge='center',resizeDuringTouch=false}={}) => {
+        await until(`!document.querySelector(${JSON.stringify(selector)}).hidden && document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect().width>0`);
+        const point=await evaluate(`(() => {const button=document.querySelector(${JSON.stringify(selector)}); const face=button.querySelector('.floating-content')||button; const r=face.getBoundingClientRect();return {x:r.left+r.width/2,y:${JSON.stringify(edge)}==='top'?r.top+5:${JSON.stringify(edge)}==='bottom'?r.bottom-5:r.top+r.height/2};})()`);
+        await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});
+        if(resizeDuringTouch)await evaluate("visualViewport.dispatchEvent(new Event('resize'))");
+        if(dx||dy)await send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:point.x+dx,y:point.y+dy}]});
+        await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      };
+      const waitForWidgets=()=>until("!document.querySelector('[data-deposit-widget]').hidden && !document.querySelector('.deposit-minimize-ghost')");
+      const closeDialog=async selector=>{
+        await evaluate(`new Promise(resolve=>{const dialog=document.querySelector(${JSON.stringify(selector)});dialog.addEventListener('close',()=>resolve(true),{once:true});dialog.querySelector('.dialog-close').click();})`);
+        await waitForWidgets();
+      };
+      let activations=0;
+      for (const [width,height] of [[390,844],[320,640],[430,932],[844,390],[700,900],[701,900]]) {
+        await viewport(width,height,true);
+        await open('/registration.html',"document.getElementById('deposit-dialog')?.open && !!document.getElementById('predictionDialog')");
+        await click('[data-dismiss-deposit]');
+        await waitForWidgets();
+        assert.deepEqual(await evaluate("[...document.querySelectorAll('.registration-page>.floating-control')].map(el=>{const r=el.getBoundingClientRect();return [r.width,r.height];})"),Array(2).fill([width<=700?60:68,width<=700?60:68]),'Button sizes must match the reference breakpoint.');
+        const edge=width<=700?17:24;
+        assert.equal(await evaluate("Math.round(document.getElementById('predictLauncher').getBoundingClientRect().left)"),edge);
+        assert.equal(await evaluate("Math.round(innerWidth-document.querySelector('[data-deposit-widget]').getBoundingClientRect().right)"),edge);
+        await evaluate(`window.__widgetOpens={claim:0,predict:0};window.__widgetTrace=[];for(const type of ['pointerdown','pointermove','pointerup','pointercancel','click','close','keydown','keyup'])document.addEventListener(type,e=>window.__widgetTrace.push({type,target:e.target.id||e.target.className,detail:e.detail,pointerType:e.pointerType,pointerId:e.pointerId,defaultPrevented:e.defaultPrevented}),true);document.querySelector('[data-deposit-widget]').addEventListener('click',()=>window.__widgetOpens.claim++);document.getElementById('predictLauncher').addEventListener('click',()=>window.__widgetOpens.predict++);`);
+        for (const [selector,dialog,key] of [['#predictLauncher','#predictionDialog','predict'],['[data-deposit-widget]','#deposit-dialog','claim']]) {
+          for(const options of [{},{dx:5,dy:5},{edge:'top'},{edge:'bottom'},{resizeDuringTouch:true}]){
+            await evaluate("document.activeElement?.blur()");
+            const before=await evaluate(`window.__widgetOpens.${key}`);
+            await tap(selector,options);
+            assert.equal(await evaluate(`document.querySelector('${dialog}').open`),true,`${key} failed to open at ${width}×${height}: ${JSON.stringify(options)}; ${JSON.stringify(await evaluate('window.__widgetTrace'))}`);
+            assert.equal(await evaluate(`window.__widgetOpens.${key}`),before+1,`${key} activated more than once`);
+            activations++;
+            await closeDialog(dialog);
+          }
+          // A real drag must move the control without activating it; its next tap works.
+          const point=await evaluate(`(() => {const r=document.querySelector('${selector}').getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};})()`);
+          const before=await evaluate(`window.__widgetOpens.${key}`);
+          const dx=key==='claim'?-55:55,dy=-65;
+          await send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[point]});
+          for(let step=1;step<=4;step++)await send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:point.x+dx*step/4,y:point.y+dy*step/4}]});
+          await send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+          assert.equal(await evaluate(`document.querySelector('${dialog}').open`),false,'Dragging must not open the dialog.');
+          assert.equal(await evaluate(`window.__widgetOpens.${key}`),before);
+          assert.ok(await evaluate(`document.querySelector('${selector}').style.left!==''`));
+          await tap(selector);
+          await until(`document.querySelector('${dialog}').open`,'The first tap after dragging was not delivered.');
+          assert.equal(await evaluate(`document.querySelector('${dialog}').open`),true,`Tap after dragging must work (${key} ${width}×${height}): ${JSON.stringify(await evaluate('window.__widgetTrace.slice(-15)'))}`);
+          activations++;
+          await closeDialog(dialog);
+        }
+        // Bounce the visual face to its highest point: hit testing must remain stable.
+        await evaluate("document.activeElement?.blur()");
+        await until("document.querySelector('[data-deposit-widget]>.floating-content').getAnimations().length>0");
+        const targetBefore=await evaluate("(() => {const r=document.querySelector('[data-deposit-widget]').getBoundingClientRect();return [r.left,r.top];})()");
+        await evaluate("document.querySelector('[data-deposit-widget]>.floating-content').getAnimations().forEach(a=>{a.pause();a.currentTime=2050;})");
+        assert.deepEqual(await evaluate("(() => {const r=document.querySelector('[data-deposit-widget]').getBoundingClientRect();return [r.left,r.top];})()"),targetBefore);
+        await tap('[data-deposit-widget]',{edge:'top'});
+        assert.equal(await evaluate("document.getElementById('deposit-dialog').open"),true,'The raised Claim face must remain tappable.');
+        activations++;
+        await closeDialog('#deposit-dialog');
+        // Rotation/keyboard-sized viewports must clamp dragged controls inside view.
+        await viewport(height,width,true);
+        await until("[...document.querySelectorAll('.registration-page>.floating-control')].every(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight;})");
+        await viewport(width,Math.max(300,Math.round(height*.6)),true);
+        await until("[...document.querySelectorAll('.registration-page>.floating-control')].every(el=>{const r=el.getBoundingClientRect();return r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight;})");
+        await viewport(width,height,true);
+        await tap('#predictLauncher');
+        assert.equal(await evaluate("document.getElementById('predictionDialog').open"),true,'Tap after viewport changes must work.');
+        activations++;
+        await closeDialog('#predictionDialog');
+        console.log('PASS taps, jitter, edges, bounce, drag, viewport changes at '+width+'×'+height);
+      }
+      await send('Emulation.setTouchEmulationEnabled',{enabled:false});
+      for(const [selector,dialog,key,code,keyCode] of [['#predictLauncher','#predictionDialog','Enter','Enter',13],['[data-deposit-widget]','#deposit-dialog',' ','Space',32]]){
+        await evaluate(`document.querySelector('${selector}').focus()`);
+        const text=keyCode===13?'\r':' ';
+        await send('Input.dispatchKeyEvent',{type:'keyDown',key,code,text,unmodifiedText:text,windowsVirtualKeyCode:keyCode});
+        await send('Input.dispatchKeyEvent',{type:'keyUp',key,code,windowsVirtualKeyCode:keyCode});
+        assert.equal(await evaluate(`document.querySelector('${dialog}').open`),true,`Keyboard activation must work (${code}): ${JSON.stringify(await evaluate('window.__widgetTrace.slice(-10)'))}`);
+        await closeDialog(dialog);
+      }
+      assert.deepEqual(errors,[]);
+      console.log('PASS '+activations+' touch activations and keyboard Enter/Space.');
+      await send('Browser.close');socket=null;return;
+    }
     if (process.argv.includes('--audio-only')) {
       const trustedClick = async selector => {
         const point = await evaluate(`(() => {const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};})()`);
@@ -224,13 +312,13 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     await click('[data-dismiss-deposit]');
     await until("!document.querySelector('.deposit-minimize-ghost')");
     await evaluate("document.querySelector('[data-deposit-widget]').blur()");
-    await until("document.querySelector('[data-deposit-widget]').getAnimations().some(a=>a.animationName==='deposit-widget-nudge')", 'Claim bounce did not start after focus returned to the page.');
-    assert.equal(await evaluate("getComputedStyle(document.querySelector('[data-deposit-widget]')).animationName"), 'deposit-widget-nudge');
-    assert.ok(await evaluate("(() => {const widget=document.querySelector('[data-deposit-widget]');const bounce=widget.getAnimations().find(a=>a.animationName==='deposit-widget-nudge');bounce.pause();bounce.currentTime=2050;return new DOMMatrix(getComputedStyle(widget).transform).m42 < -10;})()"), 'Claim button must visibly bounce upward.');
-    await evaluate("document.querySelector('[data-deposit-widget]').getAnimations().forEach(a=>{a.pause();a.currentTime=0;})");
-    assert.deepEqual(await evaluate("[...document.querySelectorAll('.registration-page>.floating-control')].map(el=>{const r=el.getBoundingClientRect();return [r.width,r.height,Math.round(innerHeight-r.bottom)];})"), [[56,56,18],[56,56,18]]);
-    assert.equal(await evaluate("Math.round(innerWidth-document.querySelector('[data-deposit-widget]').getBoundingClientRect().right)"), 18);
-    assert.equal(await evaluate("Math.round(document.getElementById('predictLauncher').getBoundingClientRect().left)"), 18);
+    await until("document.querySelector('[data-deposit-widget]>.floating-content').getAnimations().some(a=>a.animationName==='deposit-widget-nudge')", 'Claim bounce did not start after focus returned to the page.');
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('[data-deposit-widget]>.floating-content')).animationName"), 'deposit-widget-nudge');
+    assert.ok(await evaluate("(() => {const widget=document.querySelector('[data-deposit-widget]');const face=widget.querySelector('.floating-content');const bounce=face.getAnimations().find(a=>a.animationName==='deposit-widget-nudge');bounce.pause();bounce.currentTime=2050;return new DOMMatrix(getComputedStyle(face).transform).m42 < -10 && new DOMMatrix(getComputedStyle(widget).transform).m42===0;})()"), 'Claim artwork must bounce inside a stationary touch target.');
+    await evaluate("document.querySelector('[data-deposit-widget]>.floating-content').getAnimations().forEach(a=>{a.pause();a.currentTime=0;})");
+    assert.deepEqual(await evaluate("[...document.querySelectorAll('.registration-page>.floating-control')].map(el=>{const r=el.getBoundingClientRect();return [r.width,r.height,Math.round(innerHeight-r.bottom)];})"), [[60,60,17],[60,60,17]]);
+    assert.equal(await evaluate("Math.round(innerWidth-document.querySelector('[data-deposit-widget]').getBoundingClientRect().right)"), 17);
+    assert.equal(await evaluate("Math.round(document.getElementById('predictLauncher').getBoundingClientRect().left)"), 17);
     await screenshot('registration-widgets-mobile.png');
     await viewport(1440, 1000);
     assert.equal(await evaluate("Math.round(innerWidth-document.querySelector('[data-deposit-widget]').getBoundingClientRect().right)"), 24);
@@ -246,7 +334,7 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     await click('#predictionDialog .dialog-close');
     await send('Emulation.setEmulatedMedia', {features:[{name:'prefers-reduced-motion',value:'reduce'}]});
     assert.equal(await evaluate("getComputedStyle(document.querySelector('.wallet-art>span')).animationName"), 'none');
-    assert.equal(await evaluate("getComputedStyle(document.querySelector('[data-deposit-widget]')).animationName"), 'none');
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('[data-deposit-widget]>.floating-content')).animationName"), 'none');
     await click('#predictLauncher'); await click('#previewRun');
     assert.equal(await evaluate("document.getElementById('previewBoardWrap').getAttribute('aria-busy')"), 'false');
     await click('#predictionDialog .dialog-close');

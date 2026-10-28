@@ -13,7 +13,7 @@
 @keyframes wallet-arrow-nudge{0%,100%{transform:translateY(0)}45%{transform:translateY(4px)}}
 
 /* Match registration widgets and keep their default positions clear of device edges. */
-.registration-page{--floating-size:64px;--floating-edge:24px}
+.registration-page{--floating-size:68px;--floating-edge:24px}
 .registration-page>.floating-control{
   width:var(--floating-size);
   height:var(--floating-size);
@@ -22,22 +22,57 @@
   bottom:max(var(--floating-edge),env(safe-area-inset-bottom,0px));
   gap:4px;
   font-size:9px;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  --floating-face:linear-gradient(145deg,#ffce52,#f69910);
+  --floating-rim:#ffdb7b;
+  --floating-glow:0 0 0 5px #ffb32115,0 7px 35px #0009;
 }
 .registration-page>.deposit-widget{
   left:auto;
   right:max(var(--floating-edge),env(safe-area-inset-right,0px));
-  animation:deposit-widget-nudge 2.25s ease-in-out .25s infinite;
+  --floating-face:linear-gradient(145deg,#118ad2,#064391);
+  --floating-rim:#45b9f1;
+  --floating-glow:0 0 0 5px #43b6f012,0 7px 35px #0009;
 }
 .registration-page>#predictLauncher{
   left:max(var(--floating-edge),env(safe-area-inset-left,0px));
   right:auto;
 }
-.registration-page>.deposit-widget:hover,
-.registration-page>.deposit-widget:focus-visible,
-.registration-page>.deposit-widget[data-drag-pressed],
-.registration-page>.deposit-widget[data-dragging]{
-  animation:none;
-  transform:none;
+.registration-page>.floating-control::before{
+  content:'';
+  position:absolute;
+  inset:-14px -4px -4px;
+  border-radius:inherit;
+  pointer-events:auto;
+}
+.registration-page>.floating-control>.floating-content{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:inherit;
+  font-size:inherit;
+  border:2px solid var(--floating-rim);
+  border-radius:inherit;
+  background:var(--floating-face);
+  box-shadow:var(--floating-glow);
+  pointer-events:none;
+}
+.registration-page>.deposit-widget>.floating-content{
+  animation:deposit-widget-nudge 2.25s ease-in-out .25s infinite;
+}
+.registration-page>.deposit-widget:focus-visible>.floating-content,
+.registration-page>.deposit-widget[data-drag-pressed]>.floating-content,
+.registration-page>.deposit-widget[data-dragging]>.floating-content{
+  animation-play-state:paused;
+}
+@media(hover:hover) and (pointer:fine){
+  .registration-page>.deposit-widget:hover>.floating-content{animation-play-state:paused}
 }
 @keyframes deposit-widget-nudge{
   0%,76%,90%,100%{transform:translateY(0)}
@@ -48,7 +83,8 @@
 .registration-page>.floating-control img{width:26px;height:26px}
 .registration-page>.deposit-widget>span{font-size:23px}
 .registration-page>.deposit-widget small{font-size:8px;letter-spacing:.5px}
-@media(max-width:650px){.registration-page{--floating-size:56px;--floating-edge:18px}.registration-page>.floating-control img{width:23px;height:23px}.registration-page>.floating-control{font-size:8px;gap:3px}}
+.registration-page .claim-symbol{font-size:25px;line-height:1.1}
+@media(max-width:700px){.registration-page{--floating-size:60px;--floating-edge:17px}.registration-page>.floating-control img{width:25px;height:25px}.registration-page>.floating-control{font-size:8px;gap:3px}.registration-page .claim-symbol{font-size:24px}}
 
 /* Voice guidance follows the header in document flow, as in the reference. */
 .registration-page{

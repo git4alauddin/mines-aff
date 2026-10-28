@@ -25,6 +25,8 @@ Creator Studio password: `@creator`. Visitor preview code: `minesfirst`. These a
 - A draggable PREDICT control opens the local preset layout. Studio previews follow the current/next simulated round; visitor previews cycle through their own presets.
 - Reduced-motion support, accessible dialogs, keyboard controls, desktop and mobile layouts.
 
+Registration floating controls match the Aviator reference: 68×68px on desktop and 60×60px at widths up to 700px, with 24px/17px default edge spacing. PREDICT stays on the left and CLAIM on the right. The Claim artwork bounces inside a stationary, extended touch target. Taps allow normal finger movement, dragging respects visible viewport and safe-area bounds, and browser resize events do not cancel an active tap.
+
 ## Configuration
 
 | File | Settings |
@@ -51,10 +53,13 @@ The Mines voice recording is at `assets/audio/mines_guide.mp3` and guidance is e
 npm run check
 npm test
 npm run test:ui
+npm run test:widgets
 npm run build
 ```
 
 The browser checks require installed Chrome or Edge. They use an isolated headless profile, block the external registration host, verify game and portal flows, and save screenshots under `preview/`. Real registration, external iframe availability, and wallet actions are not verified.
+
+The widget checks use real browser touch input at six viewport sizes to verify default taps, finger jitter, button edges, bounce peaks, dragging, viewport changes, and keyboard access. Run `node verify-ui.cjs --widgets-only --edge` to repeat them in installed Microsoft Edge. These are desktop browser mobile-emulation checks; physical iOS Safari has not been tested in this environment.
 
 `dist/` contains only public pages, assets, scripts, and styles. Reference materials, cloned source, tests, IDE files, and development tools are excluded. The local server uses the same public allowlist. `wrangler.jsonc` is prepared for static hosting; no deployment or DNS change has been performed. The site URL defaults to `https://mines.kalam.trade` and is configurable.
 
