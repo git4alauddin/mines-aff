@@ -8,24 +8,29 @@
   <link rel="stylesheet" href="./css/base.css"><link rel="stylesheet" href="./css/landing.css">
   <script type="module" src="./js/main.js"></script>
 </head>
-<body>
-<div class="atmosphere" aria-hidden="true"></div>
+<body class="landing-page">
+<div class="atmosphere" aria-hidden="true"><div class="code-rain"><span>01001011<br>GRID.INIT<br>00011010<br>MINES.UI<br>11010101<br>NODE.025<br>00110010<br>DMF.ROUTE<br>10010110<br>VIEW.READY</span><span>MINES.UI<br>0x001A7F<br>11001001<br>FIELD.25<br>00110100<br>ACCESS.01<br>01001011<br>GRID.INIT<br>00011010<br>MINES.UI</span><span>0x0048FC<br>00101010<br>UI.RENDER<br>11001001<br>FIELD.25<br>00110100<br>ACCESS.01<br>01001011<br>GRID.INIT<br>00011010</span><span>11010101<br>NODE.025<br>00110010<br>DMF.ROUTE<br>10010110<br>VIEW.READY<br>01001011<br>GRID.INIT<br>00011010<br>MINES.UI</span></div></div>
 <main class="portal">
+  <div class="terminal-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="portal-sweep" aria-hidden="true"></div>
   <header class="portal-header">
-    <a class="wordmark" href="./?preview=1" aria-label="Mines with DM FIRST"><span class="brand-tile"><img src="./assets/images/star.svg" alt=""></span><span><strong>Mines</strong><small>WITH DM FIRST</small></span></a>
-    <a class="nav-link" href="./creator-studio.html" data-creator-link>Creator Studio <span>↗</span></a>
+    <a class="wordmark" href="./?preview=1" aria-label="Mines with DM FIRST"><span class="brand-tile"><img src="./assets/images/star.svg" alt=""></span><span><strong>Mines</strong><small>DM FIRST // ACCESS INTERFACE</small></span></a>
+    <div class="header-actions"><span class="header-status"><i class="status-dot"></i><span data-portal-status>INITIALIZING</span></span><a class="nav-link" href="./creator-studio.html" data-creator-link>Creator Studio <span>↗</span></a></div>
   </header>
   <div class="portal-layout">
     <section class="hero" aria-labelledby="portal-title">
       <p class="eyebrow"><i class="status-dot"></i> DM FIRST / MINES INTERFACE</p>
-      <h1 id="portal-title">EVERY TILE.<br><span>A NEW MOVE.</span></h1>
-      <p class="hero-description">Welcome to the Mines world.<br>Your access is getting ready.</p>
+      <h1 id="portal-title" data-text="MINES">MINES</h1>
+      <p class="access-subtitle">ACCESS TERMINAL <span class="cursor">_</span></p>
+      <p class="hero-description">Initializing the field. Stand by.</p>
       <div class="mines-scene" aria-label="Animated Mines board illustration">
-        <span class="scene-index">Mi<span>MINES / 025</span></span>
-        <span class="scene-coordinate">01 — 05<br>GRID INITIALIZATION</span>
+        <img class="terminal-operator" src="./assets/images/mines-operator.svg" alt="" aria-hidden="true" width="560" height="430">
+        <div class="field-reticle" aria-hidden="true"><i></i><i></i><i></i><span>FIELD VISUALIZER</span></div>
+        <span class="scene-index">25<span>FIELD / 05 × 05</span></span>
+        <span class="scene-coordinate">RENDER : MINES<br>NODE : DM FIRST<br><b data-diagnostic>0x0000 // INIT</b></span>
         <div class="scene-board" id="sceneBoard" aria-hidden="true"></div>
         <div class="scene-scan" aria-hidden="true"></div>
-        <div class="scene-caption"><span><i class="status-dot"></i><b id="boardStatus">PREPARING THE FIELD</b></span><span>5 × 5</span></div>
+        <div class="scene-caption"><span><i class="status-dot"></i><b id="boardStatus">PREPARING THE FIELD</b></span><span>MINES / 01</span></div>
       </div>
       <div class="hero-route mono"><span>DMF://MINES</span><i></i><span>REGISTRATION ACCESS ↗</span></div>
     </section>
@@ -43,11 +48,11 @@
         <div class="terminal-meta"><div><span>DESTINATION</span><b>REGISTRATION</b></div><div><span>LOCAL TIME</span><time data-clock>00:00:00</time></div></div>
         <div class="console-heading"><span>SYSTEM CONSOLE</span><span data-session-status>PREPARING</span></div>
         <ol class="console-lines">
-          <li data-console-step="0"><span>01</span>Initialize Mines interface<b>✓</b></li>
-          <li data-console-step="1"><span>02</span>Prepare the 25-tile field<b>✓</b></li>
-          <li data-console-step="2"><span>03</span>Attach DM FIRST referral<b>✓</b></li>
-          <li data-console-step="3"><span>04</span>Prepare registration route<b>✓</b></li>
-          <li data-console-step="4"><span>05</span>Access ready. Open portal.<b>✓</b></li>
+          <li data-console-step="0"><span class="step-index">01</span><span data-console-copy data-line="Initialize Mines interface">Initialize Mines interface</span><b>✓</b></li>
+          <li data-console-step="1"><span class="step-index">02</span><span data-console-copy data-line="Prepare the 25-tile field">Prepare the 25-tile field</span><b>✓</b></li>
+          <li data-console-step="2"><span class="step-index">03</span><span data-console-copy data-line="Attach DM FIRST referral">Attach DM FIRST referral</span><b>✓</b></li>
+          <li data-console-step="3"><span class="step-index">04</span><span data-console-copy data-line="Prepare registration route">Prepare registration route</span><b>✓</b></li>
+          <li data-console-step="4"><span class="step-index">05</span><span data-console-copy data-line="Access ready. Open portal.">Access ready. Open portal.</span><b>✓</b></li>
         </ol>
         <div class="terminal-readout"><span><i class="status-dot"></i> <b data-access-status>PREPARING</b></span><div class="signal-meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
       </div>

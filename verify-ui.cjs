@@ -112,13 +112,25 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
     assert.equal(await evaluate("document.querySelectorAll('.status-grid .ready').length"), 4);
     assert.equal(await evaluate("document.querySelector('[role=progressbar]').getAttribute('aria-valuenow')"), '100');
     assert.equal(await evaluate("document.getElementById('continueLink').hidden"), false);
+    await until("document.querySelector('.terminal-operator')?.complete && document.querySelector('.terminal-operator').naturalWidth>0", 'Terminal illustration did not load.');
+    assert.equal(await evaluate("document.querySelectorAll('.console-lines .is-done').length"), 5);
+    assert.equal(await evaluate("document.querySelector('[data-portal-status]').textContent"), 'ACCESS READY');
     await screenshot('landing-desktop.png');
+    await viewport(1233,826);
+    assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth'));
+    await screenshot('landing-reference-desktop.png');
     for (const width of [390, 320]) {
       await viewport(width, 844, true);
       assert.equal(await evaluate('document.documentElement.scrollWidth'), width, `Landing overflow at ${width}`);
       assert.ok(await evaluate("document.querySelector('.progress-track').getBoundingClientRect().bottom < innerHeight"));
       if (width === 390) await screenshot('landing-mobile.png');
     }
+    await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+    await open('/?preview=1', "document.documentElement.dataset.stage === 'unlocked'");
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('.field-reticle i')).animationName"),'none');
+    assert.equal(await evaluate("getComputedStyle(document.querySelector('.code-rain span')).animationName"),'none');
+    assert.equal(await evaluate("[...document.querySelectorAll('[data-console-copy]')].every(el=>el.textContent===el.dataset.line)"),true);
+    await send('Emulation.setEmulatedMedia',{features:[]});
     console.log('PASS landing progress, preview mode, desktop and mobile layouts');
 
     await viewport(1040, 800);

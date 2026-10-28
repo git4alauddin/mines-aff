@@ -17,7 +17,7 @@ Creator Studio password: `@creator`. Visitor preview code: `minesfirst`. These a
 
 ## What is included
 
-- Mines-themed loading animation and automatic registration handoff.
+- Mines access terminal with a glowing cyan frame, scanlines, falling diagnostic text, a hooded silhouette behind the tile visualizer, typed console steps, segmented loading, and automatic registration handoff. Reduced motion disables the decorative animation.
 - Original DM FIRST referral and wallet destinations, ₹1,000 minimum-deposit prompt, Claim flow, and draggable widgets.
 - Fictional activity samples, visibly labeled Sample. Copy Code retains the original visual simulation and does not copy an access code.
 - Responsive Creator Studio with INR virtual credits, 1–20 mines, configurable bet amounts, star and mine reveals, random tile selection, cash-out, quick bets, round history, optional sound effects, and credit reset.

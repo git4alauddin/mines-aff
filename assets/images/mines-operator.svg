@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="430" viewBox="0 0 560 430" fill="none">
+  <defs>
+    <linearGradient id="cloak" x1="280" y1="10" x2="280" y2="430" gradientUnits="userSpaceOnUse"><stop stop-color="#0b3040"/><stop offset=".6" stop-color="#061923"/><stop offset="1" stop-color="#02080e" stop-opacity="0"/></linearGradient>
+    <linearGradient id="rim" x1="190" y1="20" x2="365" y2="280" gradientUnits="userSpaceOnUse"><stop stop-color="#4cdaff" stop-opacity=".1"/><stop offset=".42" stop-color="#4cdaff" stop-opacity=".6"/><stop offset="1" stop-color="#42c9e7" stop-opacity=".08"/></linearGradient>
+    <linearGradient id="fold" x1="180" y1="50" x2="295" y2="260" gradientUnits="userSpaceOnUse"><stop stop-color="#226070" stop-opacity=".6"/><stop offset="1" stop-color="#02080e" stop-opacity=".1"/></linearGradient>
+  </defs>
+  <path d="M29 430c14-84 31-135 77-160l84-38c-10-23-12-56-3-86 14-48 33-90 60-119 10-11 22-19 33-22 11 3 23 11 33 22 27 29 46 71 60 119 9 30 7 63-3 86l84 38c46 25 63 76 77 160Z" fill="url(#cloak)"/>
+  <path d="M280 11c-39 30-71 88-83 149-4 21-4 38 0 57 13-51 35-91 83-122 48 31 70 71 83 122 4-19 4-36 0-57C351 99 319 41 280 11Z" fill="url(#fold)"/>
+  <path d="M280 95c-42 31-73 80-81 135 18 37 49 65 81 72 32-7 63-35 81-72-8-55-39-104-81-135Z" fill="#02070c"/>
+  <path d="M280 13c-43 40-73 98-86 160-5 24-3 45 4 65m82-225c43 40 73 98 86 160 5 24 3 45-4 65" stroke="url(#rim)" stroke-width="3"/>
+  <path d="M199 226c6-55 34-100 81-134 47 34 75 79 81 134M207 188c18-40 41-72 73-93m73 93c-18-40-41-72-73-93" stroke="#3c9bb2" stroke-opacity=".25" stroke-width="1.5"/>
+  <path d="m280 21-4 65m4-64 4 64m-71 56 18-50 34-58m82 108-18-50-34-58" stroke="#59c3d4" stroke-opacity=".14"/>
+  <path d="m188 236-71 43-29 109m283-152 71 43 29 109M179 251l-34 153m235-153 34 153M116 284l41 23 13 87m274-110-41 23-13 87" stroke="#297088" stroke-opacity=".4" stroke-width="2"/>
+  <path d="m202 249 38 66 21 106m97-172-38 66-21 106M213 264l-14 100m148-100 14 100" stroke="#438d9b" stroke-opacity=".24"/>
+</svg>
