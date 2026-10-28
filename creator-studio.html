@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07101b">
+  <meta name="description" content="Mines Creator Studio. A configurable local game simulation with virtual credits."><title>Mines — Creator Studio</title>
+  <link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./css/base.css"><link rel="stylesheet" href="./css/game.css"><link rel="stylesheet" href="./css/prediction.css">
+  <script src="./studio-config.js"></script><script type="module" src="./js/studio.js"></script>
+</head><body class="studio-page">
+<section class="studio-gate" id="studioGate" aria-labelledby="studioGateTitle">
+  <a class="wordmark gate-brand" href="./?preview=1"><span class="brand-tile"><img src="./assets/images/star.svg" alt=""></span><span><strong>Mines</strong><small>WITH DM FIRST</small></span></a>
+  <div class="gate-card">
+    <header class="dialog-header"><span>MINES_STUDIO.EXE</span><span>CREATOR ACCESS</span></header>
+    <div class="gate-content">
+      <div class="gate-icon" aria-hidden="true"><img src="./assets/images/star.svg" alt=""></div>
+      <p class="eyebrow">THE FIELD IS YOURS</p><h1 id="studioGateTitle">Creator Studio</h1><p>Set the scene. Reveal your next move.</p>
+      <form id="studioGateForm" novalidate><label for="studioPassword">Creator password</label><input id="studioPassword" type="password" required maxlength="128" autocomplete="off" aria-describedby="studioGateError"><p class="error" id="studioGateError" role="alert" hidden></p><button class="primary" type="submit">Open Studio <span>↗</span></button></form>
+      <p class="gate-note">Local simulation · Virtual credits only</p>
+    </div>
+  </div><a class="gate-back" href="./?preview=1">← Back to access terminal</a>
+</section>
+<main id="studioApp" hidden inert>
+  <header class="studio-header"><a class="wordmark" href="./?preview=1"><span class="brand-tile"><img src="./assets/images/star.svg" alt=""></span><span><strong>Mines</strong><small>CREATOR STUDIO</small></span></a><a class="studio-back" href="./registration.html">Registration <span>↗</span></a></header>
+  <div class="studio-disclaimer" id="studioDisclaimer">CREATOR STUDIO · SIMULATION · VIRTUAL CREDITS</div>
+  <section class="game-frame" id="gameFrame" aria-label="Mines game simulation">
+    <header class="game-topbar">
+      <button class="game-name" id="gameInfo" type="button" aria-label="Mines game information">MINES <span>⌄</span></button>
+      <button class="game-help" id="helpButton" type="button"><span>?</span>How to Play?</button>
+      <span class="fun-mode">FUN MODE</span>
+      <div class="game-balance"><strong id="balance">29,999.00</strong><span id="currency">INR</span></div>
+      <button class="game-menu" id="menuButton" type="button" aria-label="Open game settings" aria-haspopup="dialog">☰</button>
+    </header>
+    <div class="game-surface" id="gameSurface">
+      <svg class="watermark watermark-star" viewBox="0 0 240 240" aria-hidden="true"><path d="m120 10 32 70 77 10-57 56 14 78-66-38-66 38 14-78L11 90l77-10Z"/></svg>
+      <svg class="watermark watermark-mine" viewBox="0 0 240 240" aria-hidden="true"><circle cx="120" cy="130" r="95"/><path d="M111 30V10m13 20V10m20 25 17-15M165 49l25-11M94 75l13 32 24-10-13-31q-5-13-17-7T94 75Zm-25 45 32 12-10 24-32-12q-13-5-8-17t18-7Zm75 48-13-32 24-10 13 32q5 13-7 18t-17-8ZM156 101l-32 13 10 24 32-13q13-5 8-17t-18-7Z"/></svg>
+      <div class="board-shell">
+        <div class="board-meta"><label class="mine-selector"><span class="sr-only">Number of mines</span><select id="mineCount" aria-label="Number of mines"></select></label><span class="next-multiplier" id="nextMultiplier">Next: 1.10x</span></div>
+        <div class="round-progress" aria-hidden="true"><span id="roundProgress"></span></div>
+        <div class="mines-grid" id="minesGrid" role="group" aria-label="Mines field, 5 rows and 5 columns"></div>
+        <div class="board-bottom"><button class="random-button" id="randomButton" type="button">RANDOM</button><div class="auto-controls"><button id="autoSettings" type="button" aria-label="Configure auto game">⟳</button><label class="auto-label"><input id="autoToggle" type="checkbox"><span class="switch" aria-hidden="true"></span><span>Auto Game</span></label></div></div>
+      </div>
+      <button class="floating-control studio-predict" id="predictLauncher" type="button" hidden aria-label="Open Mines preset preview" aria-controls="predictionDialog" aria-haspopup="dialog" aria-expanded="false"><img src="./assets/images/star.svg" alt=""><span>PREDICT</span></button>
+      <div class="round-toast" id="roundToast" role="status" hidden><span id="toastLabel">YOU CASHED OUT</span><strong id="toastMultiplier">1.10x</strong><b id="toastAmount">₹11.00</b></div>
+    </div>
+    <footer class="game-betbar">
+      <div class="bet-pill"><label for="stake">Bet <span data-currency-label>INR</span><input id="stake" type="number" inputmode="decimal" value="10" step="10" min="10" max="100000" aria-label="Bet in virtual credits"></label><button type="button" id="betMinus" aria-label="Decrease bet">−</button><button type="button" id="quickBetButton" aria-label="Choose a bet amount" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v5c0 4 14 4 14 0V6M5 11v5c0 4 14 4 14 0v-5"/></svg></button><button type="button" id="betPlus" aria-label="Increase bet">+</button></div>
+      <button class="history-button" id="historyButton" type="button" aria-label="Open round history" aria-haspopup="dialog"><svg viewBox="0 0 28 28" aria-hidden="true"><path d="M6 8a10 10 0 1 1-2 9M3 3v7h7"/><path d="m12 9 7 5-7 5Z"/></svg></button>
+      <button class="bet-action" id="betButton" type="button"><span class="action-play" aria-hidden="true">▷</span><span class="action-copy"><strong id="actionLabel">BET</strong><small id="actionAmount" hidden>₹11.00</small></span></button>
+    </footer>
+  </section>
+  <div class="studio-info"><p id="gameStatus" role="status">Choose your bet and start a round.</p><span id="roundLabel">PRESET 01 / 3 MINES</span></div>
+  <div class="studio-tools"><span><i class="status-dot"></i>LOCAL PRESET SIMULATION</span><div><button class="subtle" id="nextPreset" type="button">Next preset ↗</button><button class="subtle" id="resetCredits" type="button">Reset credits</button></div></div>
+  <footer class="studio-footer"><span>DM FIRST × MINES</span><span>Independent demo · No real bets · No live game connection</span></footer>
+</main>
+<dialog id="helpDialog" aria-labelledby="helpTitle"><header class="dialog-header"><span>MINES / GAME GUIDE</span><button class="dialog-close" type="button" data-close aria-label="Close game guide">×</button></header><div class="dialog-body"><p class="eyebrow">ONE TILE AT A TIME</p><h2 id="helpTitle">How to play</h2><ol class="help-steps"><li><b>Set your field.</b> Choose 1–20 mines and a virtual bet.</li><li><b>Find the stars.</b> Press BET, then open a tile. Each star increases your multiplier.</li><li><b>Make your move.</b> Cash out after any star, or keep opening tiles. A mine ends the round.</li></ol><p>RANDOM opens an unrevealed tile. For Auto Game, switch it on, select tiles, set the number of rounds, then press BET.</p><p class="help-note">This is a local creator simulation. Layouts are predetermined. The preview panel shows local presets and cannot predict an external game.</p></div></dialog>
+<dialog id="settingsDialog" aria-labelledby="settingsTitle"><header class="dialog-header"><span>MINES / SETTINGS</span><button class="dialog-close" type="button" data-close aria-label="Close game settings">×</button></header><div class="dialog-body"><h2 id="settingsTitle">Game settings</h2><label class="settings-row" for="soundToggle"><span>Sound effects<small>Local reveal and cash-out sounds</small></span><input id="soundToggle" type="checkbox"></label><p>Balance and bet amounts are virtual credits. Nothing is saved when this page is reloaded.</p><button class="subtle" id="settingsHelp" type="button">Read game guide ↗</button></div></dialog>
+<dialog id="autoDialog" aria-labelledby="autoTitle"><header class="dialog-header"><span>MINES / AUTO GAME</span><button class="dialog-close" type="button" data-close aria-label="Close auto game settings">×</button></header><div class="dialog-body"><h2 id="autoTitle">Auto game</h2><form id="autoForm"><label for="autoRounds">Number of rounds</label><input id="autoRounds" type="number" value="5" min="1" max="100" step="1" required><p>Switch on Auto Game and select tiles on the field. Each round opens those tiles, then cashes out if all are stars.</p><button class="primary" type="submit">Save settings <span>✓</span></button></form></div></dialog>
+<dialog id="quickBetDialog" aria-labelledby="quickBetTitle"><header class="dialog-header"><span>MINES / BET AMOUNT</span><button class="dialog-close" type="button" data-close aria-label="Close bet amounts">×</button></header><div class="dialog-body"><h2 id="quickBetTitle">Choose your bet</h2><div class="quick-bets" id="quickBets"></div><p>Virtual credits only.</p></div></dialog>
+<dialog id="historyDialog" class="history-dialog" aria-labelledby="historyTitle"><header class="dialog-header"><span>MINES / ROUND HISTORY</span><button class="dialog-close" type="button" data-close aria-label="Close round history">×</button></header><div class="dialog-body"><h2 id="historyTitle">Your last rounds</h2><div id="historyContent"><p>No completed rounds yet.</p></div></div><footer class="dialog-footer"><span>THIS SESSION ONLY</span><span>VIRTUAL CREDITS</span></footer></dialog>
+</body></html>

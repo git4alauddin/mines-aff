@@ -1,0 +1,11 @@
+import {cp, mkdir, rm} from 'node:fs/promises';
+import {dirname, resolve, sep} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {publicEntries} from './public-files.mjs';
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const output = resolve(root, 'dist');
+if (output !== root + sep + 'dist') throw new Error('Unexpected build output path');
+await rm(output, {recursive:true, force:true});
+await mkdir(output, {recursive:true});
+for (const entry of publicEntries) await cp(resolve(root,entry),resolve(output,entry),{recursive:true});
+console.log('Built Mines portal and Creator Studio in dist/');

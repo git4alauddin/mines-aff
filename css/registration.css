@@ -1,0 +1,51 @@
+.registration-page{height:100dvh;overflow:hidden}.registration-header{height:78px;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:0 28px;border-bottom:1px solid #21445e;background:linear-gradient(90deg,#0b2035,#071322)}.registration-content{height:calc(100dvh - 78px);background:#0c111b}.registration-content iframe{width:100%;height:100%;border:0;display:block;color-scheme:normal}.activity-ticker{display:flex;align-items:center;gap:11px;padding:8px 14px;width:275px;border:1px solid #1c3e58;border-radius:5px;background:#0c2236;transition:opacity var(--activity-transition-duration,.3s),transform var(--activity-transition-duration,.3s)}.activity-ticker img{border-radius:50%;object-fit:cover;width:34px;height:34px}.activity-copy strong{font-size:11px;color:#cfdfeb}.activity-copy p{font:9px Consolas,monospace;color:#6c91ac;margin:4px 0 0}.activity-copy [data-activity-secondary]{color:#9bb9ce;margin-left:5px}.activity-amount{margin-left:auto;display:grid;gap:5px;text-align:right}.activity-amount b{color:var(--orange);font-size:13px}.activity-amount small{font:8px Consolas,monospace;color:#6c91ac}.activity-ticker[data-phase="exiting"],.activity-ticker[data-phase="away"]{opacity:0;transform:translateY(-5px)}.deposit-widget{right:auto;left:24px;bottom:70px;width:64px;height:64px;color:#cce8fa;background:linear-gradient(145deg,#118ad2,#064391);border-color:#45b9f1;box-shadow:0 0 0 5px #43b6f012,0 7px 35px #0009}.deposit-widget>span{font-size:24px}.deposit-widget small{font-size:8px;color:#cbebff}.deposit-minimize-ghost{position:fixed;z-index:15;background:#1689c977;border:1px solid #50c9fa;display:grid;place-items:center;pointer-events:none;color:white;font-size:30px}.deposit-dialog{border-color:#3c7298}.deposit-body{text-align:center}.wallet-art{width:106px;height:68px;margin:12px auto 27px;border:1px solid #57b1ee;border-radius:12px;background:linear-gradient(130deg,#0d80cd,#07427f);position:relative;box-shadow:0 14px 30px #0077cf22,0 4px 0 #032c56}.wallet-art>span{position:absolute;top:-17px;left:36px;width:36px;height:36px;border:3px solid #ffc855;border-radius:50%;display:grid;place-items:center;background:#efac24;color:#604004;font-size:24px;box-shadow:0 3px 7px #0005}.wallet-art>div{position:absolute;right:-10px;top:29px;border:1px solid #3097d7;padding:5px 16px;border-radius:5px;background:#094b85;color:#9edcff}.deposit-body>.eyebrow{font-size:9px;letter-spacing:1.8px}.deposit-body h2{font-size:22px;margin-bottom:8px}.deposit-body .deposit-amount{font-size:56px;letter-spacing:-2px;color:var(--orange);font-weight:800;line-height:1.15;margin:0}.deposit-body .deposit-currency{font:9px Consolas,monospace;letter-spacing:2px;color:#8f743e;margin:10px 0 20px}#deposit-description p{font-size:12px;color:#9bb6cc;margin-bottom:22px}#deposit-description strong{color:#c8e2f3}.deposit-destination{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-top:1px solid #1e3b53;border-bottom:1px solid #1e3b53;font:8px Consolas,monospace;letter-spacing:.4px;color:#547b99}.deposit-destination b{font-size:9px;color:#9bc9e6;font-weight:400}.deposit-destination .status-dot{width:4px;height:4px;margin-right:6px}.deposit-claim{margin-top:18px;width:100%;text-align:left}.deposit-body .deposit-note{font-size:9px;line-height:1.6;color:#64839e;margin:15px 0 0}.deposit-copy-demo{border-top:1px solid #1e3b53;margin-top:22px;padding-top:18px}.deposit-copy-demo>div{display:flex;align-items:center;justify-content:space-between;font-size:11px}.deposit-copy-demo>div span{color:#6285a1;font:8px Consolas,monospace}.deposit-copy-demo button{width:100%;margin-top:13px;background:#0d2a42;color:#b8d9ef;display:flex;align-items:center;justify-content:center;gap:10px}.deposit-copy-demo p{font-size:9px;margin:10px 0 0}.registration-guidance{position:fixed;left:50%;bottom:15px;transform:translateX(-50%);z-index:5;display:flex;align-items:center;gap:12px;padding:9px 13px;background:#091b30;border:1px solid #295979;border-radius:5px;font-size:10px;color:#9dbdd3}.registration-guidance button{background:none;border:0;color:var(--cyan);font-size:10px;white-space:nowrap}.registration-noscript{position:fixed;bottom:60px;left:20px;right:20px;background:#102c42;padding:15px;z-index:20;font-size:12px}.registration-noscript a{text-decoration:underline}
+@media(max-width:650px){.registration-header{height:69px;padding:0 16px;gap:10px}.registration-content{height:calc(100dvh - 69px)}.activity-ticker{position:fixed;top:82px;right:12px;z-index:2;width:218px;padding:8px 10px;box-shadow:0 5px 20px #0004;pointer-events:auto}.activity-ticker img{height:30px;width:30px}.activity-copy strong{font-size:10px}.activity-copy p{font-size:8px}.activity-amount b{font-size:12px}.activity-amount small{font-size:7px}.deposit-body .deposit-amount{font-size:49px}.deposit-widget{left:18px;bottom:65px;width:58px;height:58px}.registration-guidance{bottom:100px;max-width:calc(100% - 30px)}.deposit-dialog .dialog-footer{font-size:8px;padding:13px 16px}}
+
+/* Keep the screen-reader focus target without a browser-drawn heading border. */
+#deposit-title:focus{outline:none}
+
+/* Animate the wallet when its dialog opens; hidden dialogs use no animation. */
+.deposit-dialog[open] .wallet-art{animation:wallet-arrive .5s cubic-bezier(.2,.75,.25,1) both}
+.deposit-dialog[open] .wallet-art>span{animation:wallet-coin-drop 1.8s .15s ease-in-out infinite}
+.deposit-dialog[open] .wallet-art>div{animation:wallet-arrow-nudge 1.8s .15s ease-in-out infinite}
+@keyframes wallet-arrive{from{opacity:0;transform:translateY(9px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes wallet-coin-drop{0%,100%{transform:translateY(0)}35%{transform:translateY(-8px) rotate(-8deg)}65%{transform:translateY(4px) rotate(5deg)}}
+@keyframes wallet-arrow-nudge{0%,100%{transform:translateY(0)}45%{transform:translateY(4px)}}
+
+/* Match registration widgets and keep their default positions clear of device edges. */
+.registration-page{--floating-size:64px;--floating-edge:24px}
+.registration-page>.floating-control{
+  width:var(--floating-size);
+  height:var(--floating-size);
+  left:auto;
+  right:max(var(--floating-edge),env(safe-area-inset-right,0px));
+  bottom:max(var(--floating-edge),env(safe-area-inset-bottom,0px));
+  gap:4px;
+  font-size:9px;
+}
+.registration-page>.deposit-widget{
+  left:auto;
+  right:max(var(--floating-edge),env(safe-area-inset-right,0px));
+  animation:deposit-widget-nudge 2.25s ease-in-out .25s infinite;
+}
+.registration-page>#predictLauncher{
+  left:max(var(--floating-edge),env(safe-area-inset-left,0px));
+  right:auto;
+}
+.registration-page>.deposit-widget:hover,
+.registration-page>.deposit-widget:focus-visible,
+.registration-page>.deposit-widget[data-drag-pressed],
+.registration-page>.deposit-widget[data-dragging]{
+  animation:none;
+  transform:none;
+}
+@keyframes deposit-widget-nudge{
+  0%,76%,90%,100%{transform:translateY(0)}
+  80%{transform:translateY(-12px)}
+  84%{transform:translateY(0)}
+  87%{transform:translateY(-4px)}
+}
+.registration-page>.floating-control img{width:26px;height:26px}
+.registration-page>.deposit-widget>span{font-size:23px}
+.registration-page>.deposit-widget small{font-size:8px;letter-spacing:.5px}
+@media(max-width:650px){.registration-page{--floating-size:56px;--floating-edge:18px}.registration-page>.floating-control img{width:23px;height:23px}.registration-page>.floating-control{font-size:8px;gap:3px}}

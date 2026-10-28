@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071322">
+  <meta name="description" content="Mines with DM FIRST. Affiliate registration and wallet information."><title>Mines × DM FIRST — Registration</title>
+  <link rel="canonical" href="https://mines.kalam.trade/registration.html"><link rel="icon" href="./assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./css/base.css"><link rel="stylesheet" href="./css/registration.css"><link rel="stylesheet" href="./css/prediction.css">
+  <script type="module" src="./js/registration.js"></script>
+</head><body class="registration-page">
+<header class="registration-header">
+  <a class="wordmark" href="./?preview=1"><span class="brand-tile"><img src="./assets/images/star.svg" alt=""></span><span><strong>Mines</strong><small>WITH DM FIRST</small></span></a>
+  <section class="activity-ticker" data-activity-ticker data-phase="visible" data-mode="demo" aria-label="Fictional sample activity" tabindex="0">
+    <img data-activity-avatar-image src="./assets/images/avatars/img.png" alt="" width="36" height="36">
+    <div class="activity-copy"><strong data-activity-username>Aarav_24</strong><p><span data-activity-primary>****21</span> <span data-activity-secondary>Deposit</span></p></div>
+    <div class="activity-amount"><b data-activity-value>₹500</b><small data-activity-sample>Sample</small></div>
+    <span class="sr-only" data-activity-note>Demo activity. All users and transactions are fictional.</span>
+  </section>
+  <a class="nav-link" href="./creator-studio.html" data-creator-link>Creator Studio <span>↗</span></a>
+</header>
+<main class="registration-content"><iframe id="dmfirst-frame" title="DmFirst registration" src="https://www.dmfirst0.com/#/register?invitationCode=93458117528" referrerpolicy="strict-origin-when-cross-origin"></iframe></main>
+<button class="floating-control deposit-widget" type="button" data-deposit-widget hidden aria-label="Reopen minimum deposit details" aria-controls="deposit-dialog" aria-haspopup="dialog"><span>₹</span><small>CLAIM</small></button>
+<button class="floating-control" id="predictLauncher" type="button" hidden aria-label="Open Mines preset preview" aria-controls="predictionDialog" aria-haspopup="dialog" aria-expanded="false"><img src="./assets/images/star.svg" alt=""><span>PREDICT</span></button>
+<audio data-registration-audio preload="none"></audio>
+<div class="registration-guidance" data-guidance-toolbar hidden><span>Voice guidance</span><button type="button" data-guidance-toggle>Play guidance</button><span class="sr-only" role="status" data-guidance-status></span></div>
+<dialog class="deposit-dialog" id="deposit-dialog" aria-labelledby="deposit-title" aria-describedby="deposit-description">
+  <header class="dialog-header"><span><i class="status-dot"></i><b>DM FIRST</b> / WALLET ACCESS</span><button class="dialog-close" type="button" aria-label="Close deposit details" data-dismiss-deposit>×</button></header>
+  <div class="dialog-body deposit-body">
+    <div class="wallet-art" aria-hidden="true"><span>₹</span><div>↓</div></div>
+    <p class="eyebrow">YOUR NEXT STEP</p>
+    <h2 id="deposit-title" tabindex="-1" data-deposit-heading>Minimum deposit</h2>
+    <p class="deposit-amount" data-deposit-amount>₹1,000</p><p class="deposit-currency" data-deposit-currency>INDIAN RUPEES · INR</p>
+    <div id="deposit-description"><p>Deposit a minimum of <strong data-deposit-amount>₹1,000</strong> on DM FIRST.<br>Continue to wallet recharge.</p></div>
+    <div class="deposit-destination"><span>DESTINATION</span><b><i class="status-dot"></i>DM FIRST WALLET ↗</b></div>
+    <a class="primary deposit-claim" data-deposit-claim href="https://www.dmfirst0.com/#/wallet/Recharge">Claim <span>↗</span></a>
+    <p class="deposit-note">Opens DM FIRST wallet. A Claim click does not verify a deposit.</p>
+    <button class="subtle" type="button" data-guidance-stop hidden>Stop voice guidance</button>
+    <section class="deposit-copy-demo" data-copy-code-section hidden aria-label="Copy button simulation">
+      <div><strong data-copy-code-heading>Already deposited?</strong><span data-copy-code-caption>Button preview</span></div>
+      <button type="button" class="subtle" data-copy-code-demo><span data-copy-code-icon aria-hidden="true">▣</span><span data-copy-code-check aria-hidden="true" hidden>✓</span><span role="status" data-copy-code-label>Copy Code</span></button>
+      <p>Visual feedback only. No code is copied.</p>
+    </section>
+  </div>
+  <footer class="dialog-footer"><span><span data-deposit-minimum-label>₹1,000 MINIMUM</span> / <span data-deposit-currency-code>INR</span></span><span>18+ · PLAY RESPONSIBLY</span></footer>
+</dialog>
+<noscript><p class="registration-noscript">JavaScript is required for this interface. <a href="https://www.dmfirst0.com/#/register?invitationCode=93458117528">Open DM FIRST registration ↗</a></p></noscript>
+</body></html>
